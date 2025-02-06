@@ -37,5 +37,53 @@ namespace PocOfCodeRabbit.Api.Controllers
                 // Summaries = null;
             }
         }
+
+        private static Random random = new Random();
+
+        private static List<WeatherData> weatherForecasts = new List<WeatherData>();
+
+        [HttpGet("forecast")]
+        public ActionResult<List<WeatherData>> GetWeatherForecasts()
+        {
+            if (weatherForecasts.Count == 0)
+            {
+                string[] cities = { "Ýstanbul", "Ankara", "Ýzmir", "Bursa", "Antalya", "Adana", "Konya", "Trabzon", "Erzurum", "Gaziantep" };
+
+                foreach (var city in cities)
+                {
+                    var forecast = new WeatherData
+                    {
+                        City = city,
+                        Temperature = random.Next(-5, 40),
+                        Condition = GetRandomCondition()
+                    };
+
+                    weatherForecasts.Add(forecast);
+                }
+            }
+            else
+            {
+                foreach (var forecast in weatherForecasts)
+                {
+                    forecast.Temperature = random.Next(-5, 40);
+                    forecast.Condition = GetRandomCondition();
+                }
+            }
+
+            return Ok(weatherForecasts);
+        }
+
+        private string GetRandomCondition()
+        {
+            string[] conditions = { "Güneþli", "Yaðmurlu", "Karlý", "Bulutlu", "Rüzgarlý" };
+            return conditions[random.Next(conditions.Length)];
+        }
     }
 }
+
+    public class WeatherData
+    {
+        public string City { get; set; }
+        public int Temperature { get; set; }
+        public string Condition { get; set; }
+    }
